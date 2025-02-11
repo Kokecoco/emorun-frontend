@@ -20,22 +20,61 @@ if (!userId) {
   localStorage.setItem("userId", userId);
 }
 
+let likedColor = localStorage.getItem("likedColor");
+if (!likedColor) {
+  likedColor = "#000";
+}
+
+const postButton = document.getElementById("postButton");
+postButton.style.backgroundColor = likedColor;
+
+function lightenColor(color, percent) {
+  const num = parseInt(color.slice(1), 16);
+  const r = (num >> 16) + percent;
+  const g = ((num >> 8) & 0x00ff) + percent;
+  const b = (num & 0x0000ff) + percent;
+
+  // 0～255の範囲に収める
+  const newColor = `rgb(${Math.min(r, 255)}, ${Math.min(g, 255)}, ${
+    Math.min(
+      b,
+      255,
+    )
+  })`;
+  return newColor;
+}
+
+// スタイルシートを作成
+const styleSheet = document.createElement("style");
+document.head.appendChild(styleSheet);
+styleSheet.sheet.insertRule(
+  `
+    #postButton:hover {
+        background-color: ${lightenColor(likedColor, 30)};
+    }
+`,
+  styleSheet.sheet.cssRules.length,
+);
+
 // 投稿処理
 function postColor() {
   const color = document.getElementById("colorInput").value;
   const reason = document.getElementById("reasonInput").value;
+  const name = document.getElementById("nameInput").value;
 
-  if (!color || !reason) {
-    alert("色と理由を入力してください。");
+  if (!color || !reason || !name) {
+    alert("色と名前、理由や説明を入力してください。");
     return;
   }
 
   const postRef = db.collection("posts").doc(userId);
+  localStorage.setItem("likedColor", color);
 
   postRef
     .set({
       color: color,
       reason: reason,
+      name: name,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       deleted: false, // 削除フラグ
     })
@@ -75,8 +114,9 @@ function loadPosts() {
           const postElement = document.createElement("div");
           postElement.innerHTML = `
               <div style="border: 2px solid ${data.color}; padding: 10px; margin: 5px;">
+                <strong> ${data.name} </strong><br>
                 <strong>色:</strong> <span style="color:${data.color}">${data.color}</span><br>
-                <strong>理由:</strong> ${data.reason}
+                <strong>詳細:</strong> ${data.reason}
               </div>`;
           postsContainer.appendChild(postElement);
         }
@@ -94,4 +134,10 @@ function updateCharCount() {
   const reasonInput = document.getElementById("reasonInput");
   const charCount = document.getElementById("charCount");
   charCount.textContent = `${reasonInput.value.length} / 30`;
+}
+
+function updateCharCount2() {
+  const nameInput = document.getElementById("nameInput");
+  const charCount2 = document.getElementById("charCount2");
+  charCount2.textContent = `${nameInput.value.length} / 10`;
 }

@@ -18,14 +18,22 @@
         <div class="input-wrapper">
           <input
             type="text"
+            id="nameInput"
+            placeholder="アカウント名(自由入力)"
+            maxlength="10"
+            oninput="updateCharCount2()"
+          />
+          <span id="charCount2">0 / 10</span>
+          <input
+            type="text"
             id="reasonInput"
-            placeholder="色を選んだ理由"
+            placeholder="理由や説明"
             maxlength="30"
             oninput="updateCharCount()"
           />
           <span id="charCount">0 / 30</span>
         </div>
-        <button onclick="postColor()">投稿</button>
+        <button id="postButton" onclick="postColor()">投稿</button>
       </div>
       <div id="postsContainer"></div>
     </div>
