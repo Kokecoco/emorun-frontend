@@ -104,8 +104,8 @@ function loadPosts() {
         const postTime = data.timestamp?.toDate();
         const timeDiff = postTime ? (now - postTime) / (1000 * 60 * 60) : 0;
 
-        if (timeDiff >= 24 && !data.deleted) {
-          // 24時間経過していたら `deleted: true` に更新
+        if (timeDiff >= 72 && !data.deleted) {
+          // 72時間経過していたら `deleted: true` に更新
           batch.update(postRef, { deleted: true });
         }
 
