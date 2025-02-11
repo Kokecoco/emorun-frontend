@@ -38,10 +38,9 @@ h1 {
   margin-bottom: 20px;
 }
 
-input[type="color"] {
-  width: 100%;
+#colorInput {
   height: 50px;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: var(--border-radius);
   cursor: pointer;
 }
