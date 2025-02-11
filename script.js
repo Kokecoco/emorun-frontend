@@ -25,8 +25,11 @@ if (!likedColor) {
   likedColor = "#000";
 }
 
+const textColor2 = getLuminance(likedColor) > 180 ? "#333" : "#fff";
+
 const postButton = document.getElementById("postButton");
 postButton.style.backgroundColor = likedColor;
+postButton.style.color = textColor2;
 
 function lightenColor(color, percent) {
   const num = parseInt(color.slice(1), 16);
@@ -85,6 +88,30 @@ function postColor() {
     .catch((error) => console.error("エラー:", error));
 }
 
+function hexToRgb(hex) {
+  // #を取り除く
+  hex = hex.replace("#", "");
+  // 3桁の場合は6桁に変換
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return { r, g, b };
+}
+
+// 輝度を計算する関数（シンプルな加重平均）
+function getLuminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  // 0〜255の加重平均: 一般的な係数 0.299, 0.587, 0.114
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
 // 投稿リスト取得
 function loadPosts() {
   const postsContainer = document.getElementById("postsContainer");
@@ -109,14 +136,16 @@ function loadPosts() {
           batch.update(postRef, { deleted: true });
         }
 
+        const textColor = getLuminance(data.color) > 180 ? "#333" : "#fff";
+
         if (!data.deleted) {
           // 削除フラグが `false` の投稿のみ表示
           const postElement = document.createElement("div");
           postElement.innerHTML = `
-              <div style="border: 2px solid ${data.color}; padding: 10px; margin: 5px;">
-                <strong> ${data.name} </strong><br>
-                <strong>色:</strong> <span style="color:${data.color}">${data.color}</span><br>
-                <strong>詳細:</strong> ${data.reason}
+              <div style="border: 2px solid ${data.color}; padding: 10px; margin: 5px; background-color: ${data.color}; color:${textColor}; font-size: 16px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                ${data.name} <br>
+                色: ${data.color}<br>
+                詳細: ${data.reason}
               </div>`;
           postsContainer.appendChild(postElement);
         }

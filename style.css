@@ -116,3 +116,7 @@ button {
   font-size: 12px;
   color: #666;
 }
+
+#postButton {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
